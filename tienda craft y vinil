@@ -1,0 +1,119 @@
+### 1️⃣ package.json
+```json
+{
+  "name": "tienda-craftvinyl",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  }
+}
+```
+
+---
+
+### 2️⃣ index.html
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Craft Vinyl</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="TiendaCraftVinyl.jsx" type="module"></script>
+</body>
+</html>
+```
+
+---
+
+### 3️⃣ TiendaCraftVinyl.jsx
+```jsx
+// Copia y pega TODO el código de tu tienda que ya tenemos en Canvas aquí.
+// Este es el componente principal que incluye:
+// - Formulario para agregar productos
+// - Vitrina de productos
+// - Botones de pago (PIX, PayPal, Lemon/extra)
+// - Botón WhatsApp
+// - Guardado en localStorage
+
+import React, { useState, useEffect } from 'react';
+
+export default function TiendaCraftVinyl() {
+  const [products, setProducts] = useState(() => {
+    const raw = localStorage.getItem('tienda_craftvinyl_products');
+    return raw ? JSON.parse(raw) : [];
+  });
+
+  const [form, setForm] = useState({
+    title: '',
+    price: '',
+    image: '',
+    desc: '',
+    category: '',
+    payPix: '',
+    payPaypal: '',
+    payExtra: '',
+    qrLink: '',
+    whatsapp: ''
+  });
+
+  useEffect(() => {
+    localStorage.setItem('tienda_craftvinyl_products', JSON.stringify(products));
+  }, [products]);
+
+  const addProduct = (e) => {
+    e.preventDefault();
+    if (!form.title || !form.price) return;
+    setProducts([{ id: Date.now(), ...form }, ...products]);
+    setForm({ title: '', price: '', image: '', desc: '', category: '', payPix: '', payPaypal: '', payExtra: '', qrLink: '', whatsapp: '' });
+  };
+
+  const removeProduct = (id) => {
+    if (!confirm('Eliminar producto?')) return;
+    setProducts(products.filter(p => p.id !== id));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <header className="mb-6">
+          <h1 className="text-3xl font-extrabold">Tienda Craft Vinyl</h1>
+        </header>
+
+        <section className="grid md:grid-cols-2 gap-6 mb-8">
+          <form onSubmit={addProduct} className="bg-white p-4 rounded-2xl shadow-sm">
+            <h2 className="text-xl font-semibold mb-3">Agregar producto</h2>
+            {/* Aquí van los inputs para title, category, price, image, desc, payPix, payPaypal, payExtra, qrLink, whatsapp */}
+            <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-xl">Publicar</button>
+          </form>
+
+          <div className="bg-white p-4 rounded-2xl shadow-sm">
+            <h2 className="text-xl font-semibold mb-3">Inventario</h2>
+            {products.length === 0 ? (<p className="text-gray-500">No hay productos.</p>) : (
+              <ul>{products.map(p => (
+                <li key={p.id} className="flex justify-between items-center border p-2 rounded">
+                  <div>{p.title} — R$ {p.price}</div>
+                  <button onClick={() => removeProduct(p.id)} className="px-2 py-1 bg-red-100 text-red-600 rounded">Eliminar</button>
+                </li>
+              ))}</ul>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+```
+
